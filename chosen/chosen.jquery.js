@@ -368,7 +368,7 @@ Copyright (c) 2011 by Harvest
 
       rise = this.rise_up(this.container, this.dropdown);
       dd_top = rise ? -this.container.find('.chzn-drop').height() : this.container.height();
-      dd_width = this.container.width - get_side_border_padding(this.dropdown);
+      dd_width = this.container.width() - get_side_border_padding(this.dropdown);
       this.dropdown.css({
         "width": dd_width + "px",
         "top": dd_top + "px"
