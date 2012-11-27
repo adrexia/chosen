@@ -54,7 +54,6 @@ class Chosen extends AbstractChosen
     @container.addClass( "chzn-container-" + (if @is_multiple then "multi" else "single") )
     @dropdown = @container.find('div.chzn-drop').first()
 
-
     ###
       CALL CUSTOM FUNCTION: rise_up
         # if rise-up true, reverse drop-up direction
@@ -248,17 +247,17 @@ class Chosen extends AbstractChosen
       if @result_single_selected
         this.result_do_highlight( @result_single_selected )    
 
+    #patch applied: https://github.com/harvesthq/chosen/issues/300, add variable assignment dd_width
+    dd_width = this.container.width() - get_side_border_padding(@dropdown); 
+
+
     ###
       CALL CUSTOM FUNCTION: rise_up
         # if rise-up true, reverse drop-up direction
     ###
     rise = @rise_up(@container, @dropdown)
     dd_top = if rise then -this.container.find('.chzn-drop').height() else if @is_multiple then @container.height() else (@container.height() - 1)
-
-    #patch applied: https://github.com/harvesthq/chosen/issues/300, add variable assignment dd_width
-    dd_width = this.container.width() - get_side_border_padding(@dropdown);
-
-    dd_top = if @is_multiple then @container.height() else (@container.height() - 1)
+    
     @form_field_jq.trigger("liszt:showing_dropdown", {chosen: this})
 
     @dropdown.css {"top":  dd_top + "px", "left":0}
@@ -592,7 +591,7 @@ class Chosen extends AbstractChosen
       ###
       rise = @rise_up(@container, @dropdown)
       dd_top = if rise then -this.container.find('.chzn-drop').height() else @container.height()
-      
+
       @dropdown.css({"top":  dd_top + "px"})
   
   generate_random_id: ->
@@ -604,7 +603,7 @@ class Chosen extends AbstractChosen
 
 
   ###
-  CUSTOM FUNCTION
+  SILVERSTRIPE CUSTOM FUNCTION
     Rise_up function handles the case where a dropdown exceeds the height of the window
       # Adds class if true, returns true
       # Removes class if false, returns false 
@@ -612,17 +611,21 @@ class Chosen extends AbstractChosen
     to drop down
   ###
   rise_up: (container, dropdown) -> 
-    trigger = container.find('a.chzn-single');
-    endOfWindow = $(window).height()
-    elPos = trigger.offset().top
-    elHeight = dropdown.innerHeight()
+    trigger = container.find('a.chzn-single');    
+   
+    if trigger.length > 0 
+      endOfWindow = ($(window).height() + $(document).scrollTop()) - container.find('a').innerHeight();
+      elPos = trigger.offset().top
+      elHeight = dropdown.innerHeight()
 
-    if elPos + elHeight > endOfWindow and elPos - elHeight > 0
-      container.addClass('chzn-with-rise')     
-      true
+      if elPos + elHeight > endOfWindow and elPos - elHeight > 0
+        container.addClass('chzn-with-rise')     
+        true
+      else
+        container.removeClass('chzn-with-rise')
+        false  
     else
-      container.removeClass('chzn-with-rise')
-      false      
+      false        
 
     
 get_side_border_padding = (elmt) ->
